@@ -18,22 +18,13 @@ commands:
       - run: npm install
 
 jobs:
-  test-v8:
+  test:
+    parameters:
+      node-version:
+        type: string
     executor:
       name: node
-      tag: "8"
-    steps:
-      - checkout
-      - npm_install_with_cache
-      - run: npm test
-      - save_cache:
-          key: v1-npm-deps-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
-  test-v10:
-    executor:
-      name: node
-      tag: "10"
+      tag: << parameters.node-version >>
     steps:
       - checkout
       - npm_install_with_cache
@@ -47,5 +38,9 @@ workflows:
   version: 2
   build:
     jobs:
-      - test-v8
-      - test-v10
+      - test:
+          name: "test-v8"
+          node-version: "8"
+      - test:
+          name: "test-v10"
+          node-version: "10"
