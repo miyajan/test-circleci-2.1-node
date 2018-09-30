@@ -1,5 +1,13 @@
 version: 2.1
 
+executors:
+  node:
+    parameters:
+      tag:
+        type: string
+    docker:
+      - image: circleci/node:<< parameters.tag >>
+
 commands:
   npm_install_with_cache:
     steps:
@@ -11,8 +19,9 @@ commands:
 
 jobs:
   test-v8:
-    docker:
-      - image: circleci/node:8
+    executor:
+      name: node
+      tag: "8"
     steps:
       - checkout
       - npm_install_with_cache
@@ -22,8 +31,9 @@ jobs:
           paths:
             - node_modules
   test-v10:
-    docker:
-      - image: circleci/node:10
+    executor:
+      name: node
+      tag: "10"
     steps:
       - checkout
       - npm_install_with_cache
