@@ -22,13 +22,23 @@ jobs:
     parameters:
       node-version:
         type: string
+      measure-coverage:
+        type: boolean
+        default: false
     executor:
       name: node
       tag: << parameters.node-version >>
     steps:
       - checkout
       - npm_install_with_cache
-      - run: npm test
+      - when:
+          condition: << parameters.measure-coverage >>
+          steps:
+            - run: npm run test:coverage
+      - unless:
+          condition: << parameters.measure-coverage >>
+          steps:
+            - run: npm test
       - save_cache:
           key: v1-npm-deps-{{ checksum "package-lock.json" }}
           paths:
@@ -44,3 +54,4 @@ workflows:
       - test:
           name: "test-v10"
           node-version: "10"
+          measure-coverage: true
